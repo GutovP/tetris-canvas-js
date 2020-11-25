@@ -1,14 +1,10 @@
-const canvas = document.getElementById('tetris-canvas');
-const context = canvas.getContext('2d');
+const TETRIS_ROWS = 18;
+const TETRIS_COLS = 10;
+const TETRIS_CELL_SIZE = 32;
 
-const requestAnimationFrame =
-  window.requestAnimationFrame ||
-  function (param) {
-    setTimeout(param, 1000 / 60); // 60 FPS
-  };
-
-canvas.width = 800;
-canvas.height = 600;
+const tetrisTable = Array.from({ length: TETRIS_ROWS }).map(() =>
+  Array.from({ length: TETRIS_COLS }).map(() => false)
+);
 
 let x = 10;
 let y = 10;
@@ -16,12 +12,5 @@ let y = 10;
 function update() {
   x += 1;
 }
-function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillRect(x, y, 10, 10);
 
-  requestAnimationFrame(draw);
-}
-
-draw();
 setInterval(update, 100);
