@@ -16,6 +16,45 @@ const figures = [
       [1, 1],
     ],
   },
+  {
+    color: 'yellow',
+    cells: [[1], [1], [1], [1]],
+  },
+  {
+    color: 'lightgreen',
+    cells: [
+      [1, 1, 0],
+      [0, 1, 1],
+    ],
+  },
+  {
+    color: 'lightblue',
+    cells: [
+      [0, 1, 1],
+      [1, 1, 0],
+    ],
+  },
+  {
+    color: 'blue',
+    cells: [
+      [1, 1, 1],
+      [1, 0, 0],
+    ],
+  },
+  {
+    color: 'purple',
+    cells: [
+      [1, 1, 1],
+      [0, 0, 1],
+    ],
+  },
+  {
+    color: 'green',
+    cells: [
+      [1, 1, 1],
+      [0, 1, 0],
+    ],
+  },
 ];
 function getCellX(row) {
   return TETRIS_CELL_SIZE * row;
@@ -30,7 +69,7 @@ let currentFigure = {
   col: 0,
 };
 
-let gameSpeed = 100;
+let gameSpeed = 1000;
 
 function getFigure() {
   const index = (Math.random() * figures.length) | 0;
@@ -38,33 +77,58 @@ function getFigure() {
   currentFigure.row = 0;
   currentFigure.col = 0;
 }
-function update() {
-  let canFall = true;
+
+function checkForCollision(offserRow, offsetCol) {
   for (let i = 0; i < currentFigure.obj.cells.length; i += 1) {
-    const row = i + 1 + currentFigure.row;
+    const row = i + offserRow;
     for (let j = 0; j < currentFigure.obj.cells[i].length; j += 1) {
-      const col = j + currentFigure.col;
+      const col = j + offsetCol;
+
       if (currentFigure.obj.cells[i][j] && tetrisTable[row][col]) {
-        canFall = false;
-        break;
+        return true;
       }
     }
   }
+  return false;
+}
+function update() {
+  let canFall = !checkForCollision(currentFigure.row + 1, currentFigure.col);
+
   if (canFall) {
     currentFigure.row += 1;
   } else {
     for (let i = 0; i < currentFigure.obj.cells.length; i += 1) {
-      const row = i + currentFigure.row;
-      for (let j = 0; j < currentFigure.obj.cells[i].length; j += 1) {
-        const col = j + currentFigure.col;
+      const row = currentFigure.row + i;
+      for (let j = 0; j < currentFigure.obj.cells.length; j += 1) {
+        const col = currentFigure.col + j;
+
         if (currentFigure.obj.cells[i][j]) {
           tetrisTable[row][col] = currentFigure.obj.color;
         }
       }
     }
+    getFigure();
   }
   setTimeout(update, gameSpeed);
 }
 
 getFigure();
 update();
+
+window.addEventListener('keydown', function (ev) {
+  if (ev.key === 'ArrowLeft') {
+    let canMove =
+      currentFigure.col > 0 &&
+      !checkForCollision(currentFigure.row, currentFigure.col - 1);
+    if (canMove) {
+      currentFigure.col -= 1;
+    }
+  } else if (ev.key === 'ArrowRight') {
+    let canMove =
+      currentFigure.col + currentFigure.obj.cells[0].length < TETRIS_COLS &&
+      !checkForCollision(currentFigure.row, currentFigure.col + 1);
+    if (canMove) {
+      currentFigure.col += 1;
+    }
+  }
+});
