@@ -69,18 +69,22 @@ let currentFigure = {
   col: 0,
 };
 
-let gameSpeed = 1000;
+let gameSpeed = 2;
+let gameSpeedOverride = 0;
 
 function getFigure() {
   const index = (Math.random() * figures.length) | 0;
   currentFigure.obj = figures[index];
-  currentFigure.row = 0;
+  currentFigure.row = -figures[index].cells.length;
   currentFigure.col = 0;
 }
 
 function checkForCollision(offserRow, offsetCol) {
   for (let i = 0; i < currentFigure.obj.cells.length; i += 1) {
     const row = i + offserRow;
+    if (row < 0) {
+      continue;
+    }
     for (let j = 0; j < currentFigure.obj.cells[i].length; j += 1) {
       const col = j + offsetCol;
 
@@ -109,11 +113,16 @@ function update() {
     }
     getFigure();
   }
-  setTimeout(update, gameSpeed);
+  const currentSpeed = gameSpeedOverride || gameSpeed;
+  setTimeout(update, 1000 / currentSpeed);
 }
 
 getFigure();
 update();
+
+setInterval(function () {
+  gameSpeed += 1;
+}, 60 * 1000);
 
 window.addEventListener('keydown', function (ev) {
   if (ev.key === 'ArrowLeft') {
@@ -130,5 +139,17 @@ window.addEventListener('keydown', function (ev) {
     if (canMove) {
       currentFigure.col += 1;
     }
+  } else if (ev.key === 'ArrowDown') {
+    gameSpeedOverride = 50;
+  } else if (ev.key === 'q') {
+    currentFigure.obj.cells = getLeftRotation(currentFigure.obj.cells);
+  } else if (ev.key === 'w') {
+    currentFigure.obj.cells = getRightRotation(currentFigure.obj.cells);
+  }
+});
+
+window.addEventListener('keyup', function (ev) {
+  if (ev.key === 'ArrowDown') {
+    gameSpeedOverride = 0;
   }
 });
