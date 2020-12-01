@@ -5,11 +5,11 @@
   const requestAnimationFrame =
     window.requestAnimationFrame ||
     function (param) {
-      setTimeout(param, 1000 / 60); // 60 FPS
+      setTimeout(param, 1000 / 30); // 30 FPS
     };
 
   canvas.width = 800;
-  canvas.height = 600;
+  canvas.height = getCellY(TETRIS_ROWS);
 
   function drawFigure() {
     const {
@@ -70,6 +70,19 @@
     drawFigure();
     drawTable();
     drawGrid();
+
+    context.fillStyle = 'black';
+    context.font = '40px Poppins';
+    context.fillText(
+      `Score: ${getScore()}`.trim(),
+      getCellX(TETRIS_COLS) + 100,
+      100
+    );
+    context.fillText(
+      `Speed: ${getSpeed()}`.trim(),
+      getCellX(TETRIS_COLS) + 100,
+      150
+    );
 
     requestAnimationFrame(draw);
   }
