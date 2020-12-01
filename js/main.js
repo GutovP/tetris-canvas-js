@@ -79,7 +79,8 @@ const { getScore, getSpeed } = (function () {
     const index = (Math.random() * figures.length) | 0;
     currentFigure.obj = figures[index];
     currentFigure.row = -figures[index].cells.length;
-    currentFigure.col = 0;
+    currentFigure.col =
+      ((TETRIS_COLS - figures[index].cells[0].length) / 2) | 0;
   }
 
   function checkForCollision(offserRow, offsetCol, matrix) {
